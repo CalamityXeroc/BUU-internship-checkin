@@ -1,0 +1,273 @@
+/** app.wxss **/
+
+/* ===== CSS Variables ===== */
+page {
+  --primary: #1890FF;
+  --primary-dark: #096DD9;
+  --primary-light: #E6F7FF;
+  --accent: #40A9FF;
+  --success: #52C41A;
+  --warning: #FAAD14;
+  --danger: #FF4D4F;
+  --bg: #F5F5F5;
+  --card: #FFFFFF;
+  --text: #333333;
+  --text-secondary: #666666;
+  --text-light: #999999;
+  --border: #E8E8E8;
+  --radius: 16rpx;
+  --radius-sm: 8rpx;
+  --radius-btn: 48rpx;
+  --shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
+
+  background: var(--bg);
+  font-family: "PingFang SC", "Helvetica Neue", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ===== Reset ===== */
+button {
+  background: initial;
+  padding: 0;
+  margin: 0;
+  line-height: inherit;
+  font-size: inherit;
+}
+
+button:focus {
+  outline: 0;
+}
+
+button::after {
+  border: none;
+}
+
+/* ===== Common Utilities ===== */
+.page-container {
+  min-height: 100vh;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.card-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 24rpx;
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-btn);
+  font-size: 32rpx;
+  font-weight: 600;
+  padding: 24rpx 48rpx;
+  border: none;
+  width: 100%;
+  height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:active {
+  background: var(--primary-dark);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 2rpx solid var(--primary);
+  border-radius: var(--radius-btn);
+  font-size: 28rpx;
+  font-weight: 500;
+  padding: 20rpx 40rpx;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  border-radius: var(--radius-btn);
+  font-size: 28rpx;
+  font-weight: 500;
+  padding: 20rpx 40rpx;
+  border: none;
+}
+
+.btn-sm {
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  border-radius: 8rpx;
+}
+
+/* ===== Form ===== */
+.form-group {
+  margin-bottom: 24rpx;
+}
+
+.form-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  height: 88rpx;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: var(--text);
+  box-sizing: border-box;
+  border: 2rpx solid transparent;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+}
+
+/* ===== Tags & Badges ===== */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 16rpx;
+  border-radius: 6rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.tag-primary {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.tag-success {
+  background: #F6FFED;
+  color: #52C41A;
+}
+
+.tag-warning {
+  background: #FFFBE6;
+  color: #D48806;
+}
+
+/* ===== Flex helpers ===== */
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* ===== Text ===== */
+.text-center {
+  text-align: center;
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-light {
+  color: var(--text-light);
+}
+
+.text-sm {
+  font-size: 24rpx;
+}
+
+.text-lg {
+  font-size: 36rpx;
+}
+
+.text-xl {
+  font-size: 48rpx;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* ===== Spacing ===== */
+.mt-2 {
+  margin-top: 16rpx;
+}
+
+.mt-4 {
+  margin-top: 32rpx;
+}
+
+.mb-2 {
+  margin-bottom: 16rpx;
+}
+
+.mb-4 {
+  margin-bottom: 32rpx;
+}
+
+/* ===== Divider ===== */
+.divider {
+  height: 1rpx;
+  background: var(--border);
+  margin: 24rpx 0;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+}
+
+.empty-state .icon {
+  font-size: 96rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.4;
+}
+
+.empty-state .title {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+/* ===== Loading ===== */
+.loading-more {
+  text-align: center;
+  padding: 32rpx;
+  color: var(--text-light);
+  font-size: 24rpx;
+}

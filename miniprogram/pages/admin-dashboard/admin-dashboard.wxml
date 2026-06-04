@@ -1,0 +1,63 @@
+<!--pages/admin-dashboard/admin-dashboard.wxml-->
+<view class="dashboard-page">
+  <!-- 顶部统计 -->
+  <view class="dash-header" style="padding-top:{{headerPaddingTop}}px;">
+    <view class="dash-title-row" style="height:{{capsuleHeight}}px;">
+      <view class="dash-title">管理后台</view>
+      <view class="header-actions" style="height:{{capsuleHeight}}px;">
+        <view class="icon-btn" bindtap="goSettings">⚙️</view>
+        <view class="icon-btn" bindtap="handleLogout">🚪</view>
+      </view>
+    </view>
+
+    <view class="stats-row">
+      <view class="stat-card">
+        <view class="stat-num">{{totalStudents}}</view>
+        <view class="stat-label">学生总数</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-num">{{todaySignCount}}</view>
+        <view class="stat-label">今日签到</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-num">{{totalSignCount}}</view>
+        <view class="stat-label">总签到次数</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索学生姓名或学号..." value="{{keyword}}" bindinput="onSearchInput" confirm-type="search" bindconfirm="handleSearch"/>
+    <view class="search-btn" bindtap="handleSearch">搜索</view>
+  </view>
+
+  <!-- 学生列表 -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title">学生列表</view>
+      <view class="section-action" bindtap="goAllRecords">全部记录 →</view>
+    </view>
+
+    <view class="student-list" wx:if="{{students.length > 0}}">
+      <view class="student-item" wx:for="{{students}}" wx:key="_id" data-sid="{{item.sid}}" data-name="{{item.name}}" bindtap="viewStudentRecords">
+        <view class="student-avatar">👤</view>
+        <view class="student-info">
+          <view class="student-name">{{item.name}}</view>
+          <view class="student-sid">{{item.sid}}</view>
+        </view>
+        <view class="student-status">
+          <view class="tag {{item.openid ? 'tag-success' : 'tag-warning'}}">
+            {{item.openid ? '已绑定' : '未绑定'}}
+          </view>
+        </view>
+        <view class="student-arrow">→</view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <view class="icon">📭</view>
+      <view class="title">暂无学生数据</view>
+    </view>
+  </view>
+</view>

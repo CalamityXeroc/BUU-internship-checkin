@@ -1,0 +1,71 @@
+<!--pages/home/home.wxml-->
+<view class="home-page">
+  <!-- 顶部信息卡片 -->
+  <view class="top-card">
+    <view class="greeting-row">
+      <view class="greeting-text">
+        <view class="greeting-hello">Hello, {{studentInfo.name}}</view>
+        <view class="greeting-sid">学号: {{studentInfo.sid}}</view>
+      </view>
+      <view class="avatar">👤</view>
+    </view>
+
+    <view class="date-time">
+      <view class="date-text">{{currentDate}}</view>
+      <view class="time-text">{{currentTime}}</view>
+    </view>
+  </view>
+
+  <!-- 签到区域 -->
+  <view class="sign-section">
+    <view class="sign-card {{todaySigned ? 'signed' : ''}}">
+      <view class="sign-status-icon">{{todaySigned ? '✅' : '📍'}}</view>
+      <view class="sign-status-text">{{todaySigned ? '今日已签到' : '今日签到'}}</view>
+
+      <view class="location-row" wx:if="{{!todaySigned}}">
+        <view class="location-icon">📍</view>
+        <view class="location-text">{{location}}</view>
+      </view>
+
+      <view class="signed-info" wx:if="{{todaySigned && todayRecord}}">
+        <view class="signed-location">📍 {{todayRecord.location}}</view>
+        <view class="signed-time">🕐 {{formatTime(todayRecord.signTime)}}</view>
+      </view>
+
+      <button class="sign-btn {{todaySigned ? 'signed-btn' : ''}}" bindtap="handleSignIn" loading="{{signing}}" disabled="{{signing || todaySigned}}">
+        {{todaySigned ? '✓ 已完成签到' : '点击签到'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-actions">
+    <view class="action-card" bindtap="goHistory">
+      <view class="action-icon">📊</view>
+      <view class="action-label">签到记录</view>
+    </view>
+  </view>
+
+  <!-- 最近签到记录 -->
+  <view class="recent-section">
+    <view class="section-header">
+      <view class="section-title">最近签到</view>
+      <view class="section-more" bindtap="goHistory">查看全部 →</view>
+    </view>
+
+    <view class="record-list" wx:if="{{recentRecords.length > 0}}">
+      <view class="record-item" wx:for="{{recentRecords}}" wx:key="_id">
+        <view class="record-left">
+          <view class="record-date">{{formatTime(item.signTime)}}</view>
+          <view class="record-location">📍 {{item.location}}</view>
+        </view>
+        <view class="record-badge tag tag-success">已签到</view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <view class="icon">📭</view>
+      <view class="title">暂无签到记录</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "initService",
+  "version": "1.0.0",
+  "description": "初始化服务：创建数据库集合、导入默认数据",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

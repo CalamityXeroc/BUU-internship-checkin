@@ -1,0 +1,56 @@
+<!--pages/login/login.wxml-->
+<view class="login-page">
+  <!-- 登录步骤：微信一键登录 -->
+  <view class="login-card" wx:if="{{step === 'login'}}">
+    <view class="login-header">
+      <view class="login-icon">🎓</view>
+      <view class="login-title">学生登录</view>
+      <view class="login-subtitle">使用微信一键登录，验证学号后开始签到</view>
+    </view>
+
+    <button class="wechat-btn" bindtap="handleWechatLogin" loading="{{loading}}" disabled="{{loading}}">
+      <view class="wechat-btn-content">
+        <view class="wechat-icon">💬</view>
+        <text>微信一键登录</text>
+      </view>
+    </button>
+
+    <view class="error-msg" wx:if="{{errorMsg}}">{{errorMsg}}</view>
+
+  </view>
+
+  <!-- 绑定步骤：输入学号 + 姓名 -->
+  <view class="login-card" wx:if="{{step === 'bind'}}">
+    <view class="login-header">
+      <view class="login-icon">🔐</view>
+      <view class="login-title">验证身份</view>
+      <view class="login-subtitle">请输入您的学号和姓名完成身份验证</view>
+    </view>
+
+    <view class="form-section">
+      <view class="form-group">
+        <view class="form-label">学号</view>
+        <input class="form-input" placeholder="请输入学号" value="{{sid}}" bindinput="onSidInput" type="text" maxlength="20"/>
+      </view>
+
+      <view class="form-group">
+        <view class="form-label">姓名</view>
+        <input class="form-input" placeholder="请输入姓名" value="{{name}}" bindinput="onNameInput" type="text" maxlength="20"/>
+      </view>
+
+      <view class="error-msg" wx:if="{{errorMsg}}">{{errorMsg}}</view>
+
+      <button class="btn-primary mt-4" bindtap="handleBind" loading="{{loading}}" disabled="{{loading}}">
+        验证并登录
+      </button>
+
+      <view class="back-link" bindtap="backToLogin">← 返回</view>
+    </view>
+  </view>
+
+  <!-- 返回首页 -->
+  <view class="home-return" bindtap="goHome">
+    <view class="home-return-icon">🏠</view>
+    <view class="home-return-text">返回首页</view>
+  </view>
+</view>

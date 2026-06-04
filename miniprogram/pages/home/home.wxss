@@ -1,0 +1,228 @@
+/* pages/home/home.wxss */
+.home-page {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: 40rpx;
+}
+
+/* ===== 顶部卡片 ===== */
+.top-card {
+  background: linear-gradient(135deg, #1890FF, #40A9FF);
+  padding: 48rpx 32rpx 56rpx;
+  border-radius: 0 0 32rpx 32rpx;
+  color: #fff;
+}
+
+.greeting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+
+.greeting-hello {
+  font-size: 40rpx;
+  font-weight: 700;
+  margin-bottom: 6rpx;
+}
+
+.greeting-sid {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.avatar {
+  font-size: 72rpx;
+  background: rgba(255, 255, 255, 0.2);
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-time {
+  text-align: center;
+}
+
+.date-text {
+  font-size: 28rpx;
+  opacity: 0.85;
+  margin-bottom: 8rpx;
+}
+
+.time-text {
+  font-size: 64rpx;
+  font-weight: 300;
+  letter-spacing: 6rpx;
+}
+
+/* ===== 签到区域 ===== */
+.sign-section {
+  margin: -24rpx 24rpx 24rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.sign-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 48rpx 32rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  border: 3rpx solid transparent;
+}
+
+.sign-card.signed {
+  border-color: #52C41A;
+}
+
+.sign-status-icon {
+  font-size: 72rpx;
+  margin-bottom: 12rpx;
+}
+
+.sign-status-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 20rpx;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  background: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 16rpx 20rpx;
+  margin-bottom: 28rpx;
+}
+
+.location-icon {
+  font-size: 24rpx;
+}
+
+.location-text {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.signed-info {
+  margin-bottom: 24rpx;
+}
+
+.signed-location,
+.signed-time {
+  font-size: 26rpx;
+  color: #666666;
+  margin-bottom: 8rpx;
+}
+
+.sign-btn {
+  width: 100%;
+  height: 96rpx;
+  background: #1890FF;
+  color: #fff;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sign-btn:active {
+  background: #096DD9;
+}
+
+.sign-btn.signed-btn {
+  background: #F6FFED;
+  color: #52C41A;
+}
+
+.sign-btn::after {
+  border: none;
+}
+
+/* ===== 快捷入口 ===== */
+.quick-actions {
+  display: flex;
+  gap: 24rpx;
+  padding: 0 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.action-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.action-icon {
+  font-size: 48rpx;
+  margin-bottom: 10rpx;
+}
+
+.action-label {
+  font-size: 24rpx;
+  color: #666666;
+  font-weight: 500;
+}
+
+/* ===== 最近签到 ===== */
+.recent-section {
+  padding: 0 24rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333333;
+}
+
+.section-more {
+  font-size: 24rpx;
+  color: #1890FF;
+  font-weight: 500;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.record-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.record-date {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 6rpx;
+}
+
+.record-location {
+  font-size: 24rpx;
+  color: #666666;
+}

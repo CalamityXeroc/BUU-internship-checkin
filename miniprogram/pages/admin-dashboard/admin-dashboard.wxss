@@ -1,0 +1,170 @@
+/* pages/admin-dashboard/admin-dashboard.wxss */
+.dashboard-page {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: 40rpx;
+}
+
+/* ===== 顶部 ===== */
+.dash-header {
+  background: linear-gradient(135deg, #001529, #003A70);
+  padding: 0 32rpx 40rpx;
+  border-radius: 0 0 32rpx 32rpx;
+}
+
+.dash-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+
+.dash-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8rpx;
+  align-items: center;
+  padding-right: 100rpx; /* 避开右侧胶囊按钮 */
+}
+
+.icon-btn {
+  font-size: 36rpx;
+  padding: 8rpx 12rpx;
+}
+
+/* ===== 统计卡片 ===== */
+.stats-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.stat-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+  padding: 24rpx;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== 搜索栏 ===== */
+.search-bar {
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: 80rpx;
+  background: #fff;
+  border-radius: 8rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.search-btn {
+  height: 80rpx;
+  padding: 0 32rpx;
+  background: #1890FF;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+/* ===== 分区 ===== */
+.section {
+  padding: 0 24rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333333;
+}
+
+.section-action {
+  font-size: 24rpx;
+  color: #1890FF;
+  font-weight: 500;
+}
+
+/* ===== 学生列表 ===== */
+.student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.student-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.student-item:active {
+  background: #F5F5F5;
+}
+
+.student-avatar {
+  font-size: 48rpx;
+  background: #E6F7FF;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 4rpx;
+}
+
+.student-sid {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.student-arrow {
+  font-size: 24rpx;
+  color: #D9D9D9;
+}

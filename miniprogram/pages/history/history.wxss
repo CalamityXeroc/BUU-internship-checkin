@@ -1,0 +1,144 @@
+/* pages/history/history.wxss */
+.history-page {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: 40rpx;
+}
+
+/* ===== 统计头部 ===== */
+.stats-header {
+  background: linear-gradient(135deg, #1890FF, #40A9FF);
+  margin: 24rpx;
+  border-radius: 16rpx;
+  padding: 40rpx;
+  display: flex;
+  align-items: center;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  color: #fff;
+}
+
+.stat-num {
+  font-size: 56rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== 时间线列表 ===== */
+.record-list {
+  padding: 0 32rpx;
+}
+
+.record-item {
+  position: relative;
+  padding-left: 48rpx;
+  padding-bottom: 32rpx;
+}
+
+.record-item:last-child .record-line {
+  display: none;
+}
+
+.record-dot {
+  position: absolute;
+  left: 0;
+  top: 6rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: #D9D9D9;
+  z-index: 1;
+}
+
+.record-dot.dot-latest {
+  background: #1890FF;
+  box-shadow: 0 0 0 6rpx rgba(24, 144, 255, 0.2);
+}
+
+.record-line {
+  position: absolute;
+  left: 9rpx;
+  top: 30rpx;
+  width: 2rpx;
+  bottom: 0;
+  background: #E8E8E8;
+}
+
+.record-content {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.date-text {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333333;
+}
+
+.weekday-text {
+  font-size: 24rpx;
+  color: #666666;
+  margin-left: 12rpx;
+}
+
+.record-time {
+  font-size: 36rpx;
+  font-weight: 300;
+  color: #1890FF;
+  letter-spacing: 2rpx;
+}
+
+.record-location {
+  font-size: 24rpx;
+  color: #666666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-index {
+  position: absolute;
+  top: 20rpx;
+  right: 24rpx;
+  font-size: 20rpx;
+  color: #D9D9D9;
+}
+
+/* ===== 加载 ===== */
+.load-more, .load-end {
+  text-align: center;
+  padding: 32rpx;
+  font-size: 24rpx;
+}
+
+.load-more {
+  color: #1890FF;
+}
+
+.load-end {
+  color: #999999;
+}

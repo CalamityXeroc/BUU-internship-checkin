@@ -1,0 +1,51 @@
+<!--pages/history/history.wxml-->
+<view class="history-page">
+  <!-- 统计头部 -->
+  <view class="stats-header">
+    <view class="stat-item">
+      <view class="stat-num">{{total}}</view>
+      <view class="stat-label">总签到次数</view>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <view class="stat-num">{{records.length}}</view>
+      <view class="stat-label">已加载记录</view>
+    </view>
+  </view>
+
+  <!-- 记录列表 -->
+  <view class="record-list" wx:if="{{records.length > 0}}">
+    <view class="record-item" wx:for="{{records}}" wx:key="_id">
+      <view class="record-dot {{index === 0 ? 'dot-latest' : ''}}"></view>
+      <view class="record-line"></view>
+      <view class="record-content">
+        <view class="record-header">
+          <view class="record-date">
+            <text class="date-text">{{formatDate(item.signTime).date}}</text>
+            <text class="weekday-text">星期{{formatDate(item.signTime).weekday}}</text>
+          </view>
+          <view class="record-time">{{formatDate(item.signTime).time}}</view>
+        </view>
+        <view class="record-location">📍 {{item.location}}</view>
+        <view class="record-index">#{{index + 1}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore}}" bindtap="loadMore">
+    <text>{{loading ? '加载中...' : '加载更多'}}</text>
+  </view>
+
+  <!-- 已全部加载 -->
+  <view class="load-end" wx:if="{{!hasMore && records.length > 0}}">
+    <text>— 已加载全部记录 —</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{records.length === 0 && !loading}}">
+    <view class="icon">📭</view>
+    <view class="title">暂无签到记录</view>
+    <view class="subtitle">完成每日签到后，记录将显示在这里</view>
+  </view>
+</view>

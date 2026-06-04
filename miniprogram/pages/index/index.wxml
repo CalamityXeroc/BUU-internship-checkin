@@ -1,0 +1,34 @@
+<!--pages/index/index.wxml-->
+<view class="entry-page">
+  <view class="loading-screen" wx:if="{{loading}}">
+    <view class="logo-icon">📋</view>
+    <view class="app-name">实习签到系统</view>
+    <view class="loading-text">加载中...</view>
+  </view>
+
+  <view class="entry-content" wx:else>
+    <view class="header-section">
+      <view class="logo-icon">📋</view>
+      <view class="app-name">实习签到系统</view>
+      <view class="app-subtitle">BUU 实习管理平台</view>
+    </view>
+
+    <view class="role-cards">
+      <view class="role-card student-card" bindtap="goStudent">
+        <view class="role-icon">🎓</view>
+        <view class="role-name">学生签到</view>
+        <view class="role-desc">微信一键登录，每日签到打卡</view>
+        <view class="role-arrow">进入 →</view>
+      </view>
+
+      <view class="role-card admin-card" bindtap="goAdmin">
+        <view class="role-icon">👨‍🏫</view>
+        <view class="role-name">教师管理</view>
+        <view class="role-desc">管理学生，查看签到记录，导出数据</view>
+        <view class="role-arrow">进入 →</view>
+      </view>
+    </view>
+
+    <view class="footer-note">北京联合大学 · 实习签到管理系统</view>
+  </view>
+</view>

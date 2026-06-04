@@ -1,0 +1,9 @@
+{
+  "name": "userService",
+  "version": "1.0.0",
+  "description": "用户服务：学生登录绑定、管理员登录、修改密码",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
