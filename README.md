@@ -1,4 +1,4 @@
-# BUUsign — 北京联合大学实习签到系统
+# 北京联合大学实习签到系统
 
 <p align="center">
   <img src="https://img.shields.io/badge/微信小程序-原生-green?logo=wechat" alt="WeChat Mini Program" />
