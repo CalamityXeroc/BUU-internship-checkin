@@ -38,14 +38,6 @@
     </view>
   </view>
 
-  <!-- 快捷入口 -->
-  <view class="quick-actions">
-    <view class="action-card" bindtap="goHistory">
-      <view class="action-icon">📊</view>
-      <view class="action-label">签到记录</view>
-    </view>
-  </view>
-
   <!-- 最近签到记录 -->
   <view class="recent-section">
     <view class="section-header">

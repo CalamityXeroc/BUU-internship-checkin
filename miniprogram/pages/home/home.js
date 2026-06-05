@@ -90,7 +90,13 @@ Page({
   async getLocation() {
     try {
       const locRes = await new Promise((resolve, reject) => {
-        wx.getLocation({ type: "gcj02", success: resolve, fail: reject });
+        wx.getLocation({
+          type: "gcj02",
+          isHighAccuracy: true,
+          highAccuracyExpireTime: 10000,
+          success: resolve,
+          fail: reject,
+        });
       });
 
       const { latitude, longitude } = locRes;
@@ -137,7 +143,6 @@ Page({
           todayRecord: res.record,
           signing: false,
         });
-        // 刷新最近记录
         this.loadData();
       } else if (res.alreadySigned) {
         this.setData({
@@ -162,9 +167,17 @@ Page({
   },
 
   // 格式化时间
-  formatTime(dateStr) {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
+  formatTime(val) {
+    if (!val) return "";
+    let d;
+    if (val instanceof Date) {
+      d = val;
+    } else if (typeof val === "object" && val.$date) {
+      d = new Date(val.$date);
+    } else {
+      d = new Date(val);
+    }
+    if (isNaN(d.getTime())) return "";
     return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   },
 });

@@ -1,6 +1,14 @@
 // pages/history/history.js
-// 学生签到历史记录
 const api = require("../../utils/api");
+
+// 统一的日期解析器
+function parseDate(val) {
+  if (!val) return null;
+  if (val instanceof Date) return val;
+  if (typeof val === "object" && val.$date) return new Date(val.$date);
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? null : d;
+}
 
 Page({
   data: {
@@ -17,7 +25,6 @@ Page({
     this.loadRecords();
   },
 
-  // 加载记录
   async loadRecords() {
     if (this.data.loading) return;
     this.setData({ loading: true });
@@ -25,16 +32,22 @@ Page({
     try {
       const res = await api.getMyRecords(this.data.page, this.data.pageSize);
       if (res.success) {
-        const records = this.data.page === 1
-          ? res.records
-          : [...this.data.records, ...res.records];
-
-        this.setData({
-          records,
-          total: res.total,
-          hasMore: res.hasMore,
-          loading: false,
+        // 提前处理日期，模板直接取值
+        const formatted = res.records.map((r, i) => {
+          const d = parseDate(r.signTime);
+          return {
+            ...r,
+            _date: d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}` : "--",
+            _time: d ? `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : "--:--",
+            _weekday: d ? ["日", "一", "二", "三", "四", "五", "六"][d.getDay()] : "?",
+          };
         });
+
+        const records = this.data.page === 1
+          ? formatted
+          : [...this.data.records, ...formatted];
+
+        this.setData({ records, total: res.total, hasMore: res.hasMore, loading: false });
       } else {
         this.setData({ loading: false });
       }
@@ -43,7 +56,6 @@ Page({
     }
   },
 
-  // 加载更多
   loadMore() {
     if (!this.data.hasMore || this.data.loading) return;
     this.setData({ page: this.data.page + 1 }, () => {
@@ -51,23 +63,6 @@ Page({
     });
   },
 
-  // 格式化日期
-  formatDate(dateStr) {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    const hour = String(d.getHours()).padStart(2, "0");
-    const min = String(d.getMinutes()).padStart(2, "0");
-    return {
-      date: `${year}-${month}-${day}`,
-      time: `${hour}:${min}`,
-      weekday: ["日", "一", "二", "三", "四", "五", "六"][d.getDay()],
-    };
-  },
-
-  // 下拉刷新
   onPullDownRefresh() {
     this.setData({ records: [], page: 1, hasMore: false }, () => {
       this.loadRecords().then(() => {

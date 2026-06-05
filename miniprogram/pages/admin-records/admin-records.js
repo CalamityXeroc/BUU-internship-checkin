@@ -19,10 +19,19 @@ Page({
 
   onLoad(options) {
     const { sid, name } = options;
+    // 默认只看今日签到记录
+    const today = this.getTodayStr();
     if (sid) {
-      this.setData({ filterKeyword: sid, filterName: name || "" });
+      this.setData({ filterKeyword: sid, filterName: name || "", filterDate: today });
+    } else {
+      this.setData({ filterDate: today });
     }
     this.loadRecords();
+  },
+
+  getTodayStr() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   },
 
   // 加载记录
@@ -88,11 +97,11 @@ Page({
     this.loadRecords();
   },
 
-  // 清除筛选
+  // 清除筛选（回到今日默认）
   clearFilter() {
     this.setData({
       filterKeyword: "",
-      filterDate: "",
+      filterDate: this.getTodayStr(),
       filterName: "",
       showFilter: false,
       records: [],
@@ -123,7 +132,8 @@ Page({
       const BOM = "﻿"; // UTF-8 BOM，Excel 能正确识别中文
       const headers = ["学号", "姓名", "签到位置", "签到时间"];
       const rows = res.records.map((r) => {
-        const time = new Date(r.signTime);
+        const raw = r.signTime;
+        const time = raw instanceof Date ? raw : (raw && raw.$date ? new Date(raw.$date) : new Date(raw));
         const timeStr = `${time.getFullYear()}-${String(time.getMonth() + 1).padStart(2, "0")}-${String(time.getDate()).padStart(2, "0")} ${String(time.getHours()).padStart(2, "0")}:${String(time.getMinutes()).padStart(2, "0")}:${String(time.getSeconds()).padStart(2, "0")}`;
         return [r.sid, r.name, r.location, timeStr];
       });
@@ -155,9 +165,17 @@ Page({
   },
 
   // 格式化时间
-  formatTime(dateStr) {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
+  formatTime(val) {
+    if (!val) return "";
+    let d;
+    if (val instanceof Date) {
+      d = val;
+    } else if (typeof val === "object" && val.$date) {
+      d = new Date(val.$date);
+    } else {
+      d = new Date(val);
+    }
+    if (isNaN(d.getTime())) return "";
     return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   },
 
