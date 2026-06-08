@@ -32,11 +32,18 @@
     <view class="search-btn" bindtap="handleSearch">搜索</view>
   </view>
 
+  <!-- 绑定状态筛选 -->
+  <view class="filter-tabs">
+    <view class="filter-tab {{bindStatus === '' ? 'active' : ''}}" data-status="" bindtap="onBindFilter">全部</view>
+    <view class="filter-tab {{bindStatus === 'bound' ? 'active' : ''}}" data-status="bound" bindtap="onBindFilter">已绑定</view>
+    <view class="filter-tab {{bindStatus === 'unbound' ? 'active' : ''}}" data-status="unbound" bindtap="onBindFilter">未绑定</view>
+  </view>
+
   <!-- 学生列表 -->
   <view class="section">
     <view class="section-header">
       <view class="section-title">学生列表</view>
-      <view class="section-action" bindtap="goAllRecords">全部记录 →</view>
+      <view class="section-action" bindtap="goAllRecords">签到记录 →</view>
     </view>
 
     <view class="student-list" wx:if="{{students.length > 0}}">
@@ -58,6 +65,13 @@
     <view class="empty-state" wx:else>
       <view class="icon">📭</view>
       <view class="title">暂无学生数据</view>
+    </view>
+
+    <view class="load-more" wx:if="{{hasMore}}" bindtap="loadMoreStudents">
+      {{loading ? '加载中...' : '加载更多'}}
+    </view>
+    <view class="load-end" wx:if="{{!hasMore && students.length > 0}}">
+      — 已加载全部 {{totalStudents}} 名学生 —
     </view>
   </view>
 </view>

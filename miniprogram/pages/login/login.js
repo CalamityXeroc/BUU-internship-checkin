@@ -9,6 +9,7 @@ Page({
     loading: false,
     sid: "",
     name: "",
+    myOpenid: "",
     errorMsg: "",
   },
 
@@ -40,8 +41,8 @@ Page({
           wx.switchTab({ url: "/pages/home/home" });
         }, 1500);
       } else {
-        // 未绑定，进入绑定页面
-        this.setData({ step: "bind", loading: false });
+        // 未绑定，进入绑定页面，保存 openid 以便调试
+        this.setData({ step: "bind", loading: false, myOpenid: res.openid || "" });
       }
     } catch (err) {
       this.setData({ errorMsg: "网络错误，请重试", loading: false });

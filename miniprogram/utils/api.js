@@ -55,9 +55,9 @@ function getMyRecords(page = 1, pageSize = 20) {
   return callCloud("signService", { action: "getMyRecords", page, pageSize });
 }
 
-/** 管理员：获取所有学生列表 */
-function getAllStudents(keyword = "") {
-  return callCloud("signService", { action: "getAllStudents", keyword });
+/** 管理员：获取所有学生列表（分页、绑定状态筛选） */
+function getAllStudents(keyword = "", page = 1, pageSize = 20, bindStatus = "") {
+  return callCloud("signService", { action: "getAllStudents", keyword, page, pageSize, bindStatus });
 }
 
 /** 管理员：获取所有签到记录（支持学号/姓名/日期筛选） */
@@ -68,6 +68,11 @@ function getAllRecords({ date, keyword, page = 1, pageSize = 20 } = {}) {
 /** 管理员：获取导出数据 */
 function exportRecords({ date, keyword } = {}) {
   return callCloud("signService", { action: "exportRecords", date, keyword });
+}
+
+/** 批量导入学生（CSV 文本） */
+function batchImportStudents(csvText) {
+  return callCloud("signService", { action: "batchImportStudents", csvText });
 }
 
 /** 逆地理编码：GPS坐标 → 街道地址 */
@@ -82,6 +87,21 @@ function initDatabase() {
   return callCloud("initService", { action: "init" });
 }
 
+/** 导入学生名单（仅导入，不创建集合） */
+function importStudents() {
+  return callCloud("initService", { action: "import" });
+}
+
+/** 模拟绑定：给所有未绑定学生写入模拟 openid */
+function mockBind() {
+  return callCloud("initService", { action: "mockBind" });
+}
+
+/** 模拟签到：给所有已绑定学生生成今日签到记录 */
+function mockSign() {
+  return callCloud("initService", { action: "mockSign" });
+}
+
 module.exports = {
   studentLogin,
   bindStudent,
@@ -94,5 +114,9 @@ module.exports = {
   getAllRecords,
   exportRecords,
   reverseGeocode,
+  batchImportStudents,
   initDatabase,
+  importStudents,
+  mockBind,
+  mockSign,
 };

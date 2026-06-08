@@ -88,24 +88,41 @@ async function getMyRecords(openid, page = 1, pageSize = 20) {
   };
 }
 
-// ========== 管理员：获取所有学生列表 ==========
-async function getAllStudents(keyword = "") {
-  let query = db.collection("students");
+// ========== 管理员：获取所有学生列表（支持绑定状态筛选） ==========
+async function getAllStudents(keyword = "", page = 1, pageSize = 20, bindStatus = "") {
+  const skip = (page - 1) * pageSize;
+  const parts = [];
 
   if (keyword) {
-    query = query.where(
-      _.or([
-        { name: db.RegExp({ regexp: keyword, options: "i" }) },
-        { sid: db.RegExp({ regexp: keyword, options: "i" }) },
-      ])
-    );
+    parts.push(_.or([
+      { name: db.RegExp({ regexp: keyword, options: "i" }) },
+      { sid: db.RegExp({ regexp: keyword, options: "i" }) },
+    ]));
   }
 
-  const res = await query.orderBy("sid", "asc").limit(200).get();
+  // 绑定状态筛选：bound=已绑定(openid非空) unbound=未绑定(openid为空)
+  if (bindStatus === "bound") {
+    parts.push({ openid: _.and([_.exists(true), _.neq(null), _.neq("")]) });
+  } else if (bindStatus === "unbound") {
+    parts.push(_.or([{ openid: null }, { openid: _.exists(false) }]));
+  }
+
+  const conditions = parts.length > 0 ? _.and(parts) : {};
+
+  let query = db.collection("students").where(conditions);
+
+  const [dataRes, countRes] = await Promise.all([
+    query.orderBy("sid", "asc").skip(skip).limit(pageSize).get(),
+    db.collection("students").where(conditions).count(),
+  ]);
 
   return {
     success: true,
-    students: res.data,
+    students: dataRes.data,
+    total: countRes.total,
+    page,
+    pageSize,
+    hasMore: skip + dataRes.data.length < countRes.total,
   };
 }
 
@@ -227,6 +244,74 @@ async function reverseGeocode(lat, lng) {
   });
 }
 
+// ========== 批量导入学生 ==========
+async function batchImportStudents(csvText) {
+  try {
+    if (!csvText || !csvText.trim()) {
+      return { success: false, errMsg: "CSV 内容为空" };
+    }
+
+    const lines = csvText.trim().split("\n");
+    let imported = 0;
+    let skipped = 0;
+    const errors = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      const parts = line.split(",");
+      if (parts.length < 2) {
+        errors.push(`第${i + 1}行格式错误`);
+        continue;
+      }
+
+      // 自动识别表头（第一行包含"姓名"或"学号"）
+      const isHeader = /姓名|学号|sid|name/i.test(parts[0]) || /姓名|学号|sid|name/i.test(parts[1]);
+      if (i === 0 && isHeader) continue;
+
+      // 自动识别哪列是学号，哪列是姓名
+      let name, sid;
+      if (/^\d{10,}$/.test(parts[0])) {
+        sid = parts[0].trim();
+        name = parts[1].trim();
+      } else {
+        name = parts[0].trim();
+        sid = parts[1].trim();
+      }
+
+      if (!sid || !name) {
+        errors.push(`第${i + 1}行数据不完整`);
+        continue;
+      }
+
+      // 检查学号是否已存在
+      const exist = await db.collection("students").where({ sid }).get();
+      if (exist.data.length > 0) {
+        skipped++;
+        continue;
+      }
+
+      try {
+        await db.collection("students").add({ data: { sid, name } });
+        imported++;
+      } catch (e) {
+        errors.push(`${name}(${sid}): ${e.message || "写入失败"}`);
+      }
+    }
+
+    return {
+      success: true,
+      imported,
+      skipped,
+      total: imported + skipped,
+      errors: errors.length > 0 ? errors.slice(0, 10) : [],
+    };
+  } catch (e) {
+    return { success: false, errMsg: `导入异常: ${e.message || "未知错误"}` };
+  }
+}
+
 // ========== 云函数入口 ==========
 exports.main = async (event, context) => {
   const { action } = event;
@@ -239,7 +324,7 @@ exports.main = async (event, context) => {
     case "getMyRecords":
       return await getMyRecords(openid, event.page, event.pageSize);
     case "getAllStudents":
-      return await getAllStudents(event.keyword);
+      return await getAllStudents(event.keyword, event.page, event.pageSize, event.bindStatus);
     case "getAllRecords":
       return await getAllRecords({
         date: event.date,
@@ -249,6 +334,8 @@ exports.main = async (event, context) => {
       });
     case "reverseGeocode":
       return await reverseGeocode(event.lat, event.lng);
+    case "batchImportStudents":
+      return await batchImportStudents(event.csvText);
     case "exportRecords":
       return await exportRecords({ date: event.date, keyword: event.keyword });
     default:

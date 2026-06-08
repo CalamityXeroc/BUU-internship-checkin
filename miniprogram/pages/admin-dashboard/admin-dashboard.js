@@ -7,10 +7,14 @@ Page({
   data: {
     adminInfo: null,
     students: [],
+    page: 1,
+    pageSize: 20,
+    hasMore: false,
     totalStudents: 0,
     todaySignCount: 0,
     totalSignCount: 0,
     keyword: "",
+    bindStatus: "",
     loading: false,
     headerPaddingTop: 40,
     capsuleHeight: 32,
@@ -39,32 +43,48 @@ Page({
   async loadData() {
     this.setData({ loading: true });
 
-    try {
-      const [studentRes, todayRes, allRes] = await Promise.all([
-        api.getAllStudents(this.data.keyword),
-        api.getAllRecords({ date: this.getTodayStr(), pageSize: 1000 }),
-        api.getAllRecords({ pageSize: 1 }),
-      ]);
+    // 搜索时重置分页
+    this.setData({ students: [], page: 1, hasMore: false });
+    await this.loadStudents();
 
-      if (studentRes.success) {
+    try {
+      const todayRes = await api.getAllRecords({ date: this.getTodayStr(), pageSize: 1000 });
+      if (todayRes.success) {
         this.setData({
-          students: studentRes.students,
-          totalStudents: studentRes.students.length,
+          todaySignCount: todayRes.total,
+          totalSignCount: todayRes.total,
         });
       }
-
-      if (todayRes.success) {
-        this.setData({ todaySignCount: todayRes.total });
-      }
-
-      if (allRes.success) {
-        this.setData({ totalSignCount: allRes.total });
-      }
     } catch (err) {
-      console.error("加载数据失败:", err);
+      console.error("加载签到统计失败:", err);
     }
 
     this.setData({ loading: false });
+  },
+
+  async loadStudents() {
+    try {
+      const res = await api.getAllStudents(this.data.keyword, this.data.page, this.data.pageSize, this.data.bindStatus);
+      if (res.success) {
+        const allStudents = this.data.page === 1
+          ? res.students
+          : [...this.data.students, ...res.students];
+        this.setData({
+          students: allStudents,
+          totalStudents: res.total,
+          hasMore: res.hasMore,
+        });
+      }
+    } catch (err) {
+      console.error("加载学生列表失败:", err);
+    }
+  },
+
+  loadMoreStudents() {
+    if (!this.data.hasMore || this.data.loading) return;
+    this.setData({ page: this.data.page + 1 }, () => {
+      this.loadStudents();
+    });
   },
 
   getTodayStr() {
@@ -86,6 +106,15 @@ Page({
     wx.navigateTo({
       url: `/pages/admin-records/admin-records?sid=${sid}&name=${name}`,
     });
+  },
+
+  // 绑定状态筛选
+  onBindFilter(e) {
+    const status = e.currentTarget.dataset.status;
+    // 点击当前已选中则取消筛选
+    const newStatus = this.data.bindStatus === status ? "" : status;
+    this.setData({ bindStatus: newStatus });
+    this.loadData();
   },
 
   goAllRecords() {

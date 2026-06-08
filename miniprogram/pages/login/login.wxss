@@ -123,6 +123,17 @@
   font-weight: 500;
 }
 
+.openid-tip {
+  background: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 12rpx 20rpx;
+  margin-bottom: 16rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #999999;
+  word-break: break-all;
+}
+
 .back-link {
   text-align: center;
   margin-top: 24rpx;

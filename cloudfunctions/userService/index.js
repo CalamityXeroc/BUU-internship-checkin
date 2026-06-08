@@ -47,8 +47,16 @@ async function bindStudent(openid, sid, name) {
 
   // 检查该微信是否已绑定其他学号
   const existOpenid = await db.collection("students").where({ openid }).get();
-  if (existOpenid.data.length > 0 && existOpenid.data[0].sid !== sid) {
-    return { success: false, errMsg: "该微信已绑定其他学号，请先解绑" };
+  if (existOpenid.data.length > 0) {
+    const boundStudent = existOpenid.data[0];
+    if (boundStudent.sid !== sid) {
+      return {
+        success: false,
+        errMsg: `该微信已绑定学号 ${boundStudent.sid}（${boundStudent.name}），请先解绑`,
+      };
+    }
+    // 同一学号，允许重新绑定（openid 被手动清空后重新绑定）
+    // 直接跳过，走下面的更新逻辑
   }
 
   // 验证姓名是否匹配

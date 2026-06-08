@@ -168,3 +168,41 @@
   font-size: 24rpx;
   color: #D9D9D9;
 }
+
+/* ===== 筛选标签 ===== */
+.filter-tabs {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 24rpx 16rpx;
+}
+
+.filter-tab {
+  padding: 12rpx 28rpx;
+  border-radius: 32rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #666;
+  background: #fff;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.2s;
+}
+
+.filter-tab.active {
+  background: #1890FF;
+  color: #fff;
+}
+
+/* ===== 加载更多 ===== */
+.load-more, .load-end {
+  text-align: center;
+  padding: 32rpx;
+  font-size: 24rpx;
+}
+
+.load-more {
+  color: #1890FF;
+}
+
+.load-end {
+  color: #999999;
+}

@@ -1,7 +1,11 @@
 // pages/home/home.js
-// 学生首页 - 今日签到
 const api = require("../../utils/api");
 const app = getApp();
+
+// 位置缓存（模块级别，30 秒内不重复请求 GPS + 逆地理编码）
+let _locationCache = null;
+let _locationCacheTime = 0;
+const LOCATION_CACHE_MS = 30000;
 
 Page({
   data: {
@@ -21,9 +25,7 @@ Page({
 
   onLoad() {
     this.updateTime();
-    this.interval = setInterval(() => {
-      this.updateTime();
-    }, 60000);
+    this.interval = setInterval(() => this.updateTime(), 60000);
   },
 
   onUnload() {
@@ -34,60 +36,50 @@ Page({
     const now = new Date();
     const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
     const weekDays = ["日", "一", "二", "三", "四", "五", "六"];
-    const weekDay = weekDays[now.getDay()];
-    const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-
     this.setData({
-      currentDate: `${dateStr} 星期${weekDay}`,
-      currentTime: timeStr,
+      currentDate: `${dateStr} 星期${weekDays[now.getDay()]}`,
+      currentTime: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
     });
   },
 
   async loadData() {
     const studentInfo = app.globalData.studentInfo || wx.getStorageSync("studentInfo");
-
     if (!studentInfo) {
       wx.redirectTo({ url: "/pages/index/index" });
       return;
     }
-
     this.setData({ studentInfo });
 
-    // 获取定位
+    // 优先用缓存位置，无缓存才 GPS + 逆地理编码
     this.getLocation();
+    this.loadRecentRecords();
+  },
 
-    // 获取今日签到状态
+  async loadRecentRecords() {
     try {
-      const res = await api.getMyRecords(1, 1);
-      if (res.success && res.records.length > 0) {
-        const latest = res.records[0];
-        const today = new Date().toDateString();
-        const recordDate = new Date(latest.signTime).toDateString();
+      const res = await api.getMyRecords(1, 5);
+      if (!res.success || res.records.length === 0) return;
 
-        if (today === recordDate) {
-          this.setData({
-            todaySigned: true,
-            todayRecord: latest,
-          });
-        }
+      const today = new Date().toDateString();
+      const latest = res.records[0];
+
+      if (today === new Date(latest.signTime).toDateString()) {
+        this.setData({ todaySigned: true, todayRecord: latest });
       }
+      this.setData({ recentRecords: res.records });
     } catch (err) {
       console.error("获取签到记录失败:", err);
     }
-
-    // 获取最近记录
-    try {
-      const res = await api.getMyRecords(1, 5);
-      if (res.success) {
-        this.setData({ recentRecords: res.records });
-      }
-    } catch (err) {
-      console.error("获取最近记录失败:", err);
-    }
   },
 
-  // 获取位置（GPS → 云函数逆地理编码 → 街道地址）
   async getLocation() {
+    // 30 秒内有缓存直接用，避免频繁调用 GPS + 逆地理编码
+    const now = Date.now();
+    if (_locationCache && now - _locationCacheTime < LOCATION_CACHE_MS) {
+      this.setData({ location: _locationCache });
+      return;
+    }
+
     try {
       const locRes = await new Promise((resolve, reject) => {
         wx.getLocation({
@@ -99,37 +91,27 @@ Page({
         });
       });
 
-      const { latitude, longitude } = locRes;
-      const lat = latitude.toFixed(6);
-      const lng = longitude.toFixed(6);
+      const lat = locRes.latitude.toFixed(6);
+      const lng = locRes.longitude.toFixed(6);
 
-      // 调用云函数做逆地理编码
       const geoRes = await api.reverseGeocode(lat, lng);
-      if (geoRes.success) {
-        this.setData({
-          location: geoRes.formatted || geoRes.address,
-          latitude,
-          longitude,
-        });
-      } else {
-        // 云函数失败时用坐标作为兜底
-        this.setData({
-          location: `${lat}, ${lng}`,
-          latitude,
-          longitude,
-        });
-      }
+      const addr = geoRes.success ? (geoRes.formatted || geoRes.address) : `${lat}, ${lng}`;
+
+      _locationCache = addr;
+      _locationCacheTime = now;
+      this.setData({ location: addr, latitude: locRes.latitude, longitude: locRes.longitude });
     } catch (err) {
       this.setData({ location: "无法获取位置，请授权定位权限" });
     }
   },
 
-  // 签到
   async handleSignIn() {
     if (this.data.todaySigned) {
       wx.showToast({ title: "今日已签到", icon: "none" });
       return;
     }
+    // 防抖：signing 为 true 时禁止重复点击
+    if (this.data.signing) return;
 
     this.setData({ signing: true });
 
@@ -138,19 +120,10 @@ Page({
 
       if (res.success) {
         wx.showToast({ title: "签到成功！", icon: "success" });
-        this.setData({
-          todaySigned: true,
-          todayRecord: res.record,
-          signing: false,
-        });
-        this.loadData();
+        this.setData({ todaySigned: true, todayRecord: res.record, signing: false });
       } else if (res.alreadySigned) {
-        this.setData({
-          todaySigned: true,
-          todayRecord: res.record,
-          signing: false,
-        });
         wx.showToast({ title: "今日已签到", icon: "none" });
+        this.setData({ todaySigned: true, todayRecord: res.record, signing: false });
       } else {
         wx.showToast({ title: res.errMsg || "签到失败", icon: "none" });
         this.setData({ signing: false });
@@ -161,22 +134,16 @@ Page({
     }
   },
 
-  // 跳转历史
   goHistory() {
     wx.switchTab({ url: "/pages/history/history" });
   },
 
-  // 格式化时间
   formatTime(val) {
     if (!val) return "";
     let d;
-    if (val instanceof Date) {
-      d = val;
-    } else if (typeof val === "object" && val.$date) {
-      d = new Date(val.$date);
-    } else {
-      d = new Date(val);
-    }
+    if (val instanceof Date) d = val;
+    else if (typeof val === "object" && val.$date) d = new Date(val.$date);
+    else d = new Date(val);
     if (isNaN(d.getTime())) return "";
     return `${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   },

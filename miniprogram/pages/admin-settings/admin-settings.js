@@ -102,6 +102,46 @@ Page({
     });
   },
 
+  async handleMockBind() {
+    wx.showModal({
+      title: "模拟绑定",
+      content: "将为所有未绑定学生生成模拟 openid，模拟微信绑定过程。确定吗？",
+      success: async (res) => {
+        if (res.confirm) {
+          wx.showLoading({ title: "绑定中..." });
+          try {
+            const result = await api.mockBind();
+            wx.hideLoading();
+            wx.showModal({ title: "模拟绑定完成", content: result.message, showCancel: false });
+          } catch (err) {
+            wx.hideLoading();
+            wx.showToast({ title: "操作失败", icon: "none" });
+          }
+        }
+      },
+    });
+  },
+
+  async handleMockSign() {
+    wx.showModal({
+      title: "模拟签到",
+      content: "将为所有已绑定学生生成今日签到记录。确定吗？",
+      success: async (res) => {
+        if (res.confirm) {
+          wx.showLoading({ title: "签到中..." });
+          try {
+            const result = await api.mockSign();
+            wx.hideLoading();
+            wx.showModal({ title: "模拟签到完成", content: result.message, showCancel: false });
+          } catch (err) {
+            wx.hideLoading();
+            wx.showToast({ title: "操作失败", icon: "none" });
+          }
+        }
+      },
+    });
+  },
+
   goBack() {
     wx.navigateBack();
   },
