@@ -28,19 +28,4 @@
     <view class="back-link" bindtap="goBack">← 返回</view>
   </view>
 
-  <!-- 初始化数据库 -->
-  <view class="init-section">
-    <view class="card-title">数据初始化</view>
-    <view class="init-desc">创建集合、导入 92 名学生和默认管理员，已存在的自动跳过。</view>
-    <button class="btn-outline mt-2" bindtap="handleInit">初始化数据库</button>
-  </view>
-
-  <!-- 模拟测试 -->
-  <view class="init-section">
-    <view class="card-title">模拟测试</view>
-    <view class="init-desc">为所有未绑定学生生成模拟 openid，模拟微信绑定。</view>
-    <button class="btn-outline mt-2" bindtap="handleMockBind">模拟绑定</button>
-    <view class="init-desc mt-2">为所有已绑定学生生成今日签到记录（已签自动跳过）。</view>
-    <button class="btn-outline mt-2" bindtap="handleMockSign">模拟签到</button>
-  </view>
 </view>

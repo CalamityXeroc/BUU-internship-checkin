@@ -1,8 +1,17 @@
+process.env.TZ = "Asia/Shanghai";
+
 const cloud = require("wx-server-sdk");
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
 const https = require("https");
+
+// 管理员身份验证（通过 openid 查 admins 集合）
+async function isAdmin(openid) {
+  const res = await db.collection("admins").where({ openid }).get();
+  return res.data.length > 0;
+}
+const AUTH_FAIL = { success: false, errMsg: "无权限：需要管理员身份" };
 
 // 高德地图 Web服务 API Key（去 https://console.amap.com/ 申请）
 const AMAP_KEY = "YOUR_AMAP_WEB_SERVICE_KEY";
@@ -323,21 +332,27 @@ exports.main = async (event, context) => {
       return await checkIn(openid, event.location);
     case "getMyRecords":
       return await getMyRecords(openid, event.page, event.pageSize);
+    // ===== 以下为管理员专用接口，需鉴权 =====
     case "getAllStudents":
+      if (!(await isAdmin(openid))) return AUTH_FAIL;
       return await getAllStudents(event.keyword, event.page, event.pageSize, event.bindStatus);
     case "getAllRecords":
+      if (!(await isAdmin(openid))) return AUTH_FAIL;
       return await getAllRecords({
         date: event.date,
         keyword: event.keyword,
         page: event.page,
         pageSize: event.pageSize,
       });
-    case "reverseGeocode":
-      return await reverseGeocode(event.lat, event.lng);
     case "batchImportStudents":
+      if (!(await isAdmin(openid))) return AUTH_FAIL;
       return await batchImportStudents(event.csvText);
     case "exportRecords":
+      if (!(await isAdmin(openid))) return AUTH_FAIL;
       return await exportRecords({ date: event.date, keyword: event.keyword });
+    // ===== 公共接口 =====
+    case "reverseGeocode":
+      return await reverseGeocode(event.lat, event.lng);
     default:
       return { success: false, errMsg: `未知操作: ${action}` };
   }

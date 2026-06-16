@@ -28,12 +28,6 @@
     </view>
   </view>
 
-  <!-- 初始化数据库 -->
-  <view class="init-return" bindtap="handleInit">
-    <view class="init-return-icon">🗄️</view>
-    <view class="init-return-text">初始化数据库</view>
-  </view>
-
   <!-- 返回首页 -->
   <view class="home-return" bindtap="goHome">
     <view class="home-return-icon">🏠</view>

@@ -15,6 +15,7 @@ Page({
     currentDate: "",
     currentTime: "",
     location: "定位中...",
+    locationReady: false,
     signing: false,
     recentRecords: [],
   },
@@ -76,7 +77,7 @@ Page({
     // 30 秒内有缓存直接用，避免频繁调用 GPS + 逆地理编码
     const now = Date.now();
     if (_locationCache && now - _locationCacheTime < LOCATION_CACHE_MS) {
-      this.setData({ location: _locationCache });
+      this.setData({ location: _locationCache, locationReady: true });
       return;
     }
 
@@ -99,15 +100,21 @@ Page({
 
       _locationCache = addr;
       _locationCacheTime = now;
-      this.setData({ location: addr, latitude: locRes.latitude, longitude: locRes.longitude });
+      this.setData({ location: addr, locationReady: true, latitude: locRes.latitude, longitude: locRes.longitude });
     } catch (err) {
-      this.setData({ location: "无法获取位置，请授权定位权限" });
+      this.setData({ location: "无法获取位置，请授权定位权限", locationReady: false });
     }
   },
 
   async handleSignIn() {
     if (this.data.todaySigned) {
       wx.showToast({ title: "今日已签到", icon: "none" });
+      return;
+    }
+    // H1: 定位失败时禁止签到
+    if (!this.data.locationReady) {
+      wx.showToast({ title: "定位未就绪，请稍后重试", icon: "none" });
+      this.getLocation(); // 尝试重新定位
       return;
     }
     // 防抖：signing 为 true 时禁止重复点击

@@ -38,10 +38,6 @@
         <input class="form-input" placeholder="请输入姓名" value="{{name}}" bindinput="onNameInput" type="text" maxlength="20"/>
       </view>
 
-      <view class="openid-tip" wx:if="{{myOpenid}}">
-        <text>你的 OpenID: {{myOpenid}}</text>
-      </view>
-
       <view class="error-msg" wx:if="{{errorMsg}}">{{errorMsg}}</view>
 
       <button class="btn-primary mt-4" bindtap="handleBind" loading="{{loading}}" disabled="{{loading}}">
