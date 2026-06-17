@@ -145,6 +145,21 @@ Page({
     wx.switchTab({ url: "/pages/history/history" });
   },
 
+  // 转发给好友
+  onShareAppMessage() {
+    return {
+      title: "北京联合大学实习签到",
+      path: "/pages/index/index",
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: "北京联合大学实习签到 — 每日打卡",
+    };
+  },
+
   formatTime(val) {
     if (!val) return "";
     let d;
