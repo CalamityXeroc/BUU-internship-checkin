@@ -6,12 +6,6 @@ const db = cloud.database();
 const _ = db.command;
 const https = require("https");
 
-// 管理员身份验证（通过 openid 查 admins 集合）
-async function isAdmin(openid) {
-  const res = await db.collection("admins").where({ openid }).get();
-  return res.data.length > 0;
-}
-const AUTH_FAIL = { success: false, errMsg: "无权限：需要管理员身份" };
 
 // 高德地图 Web服务 API Key（去 https://console.amap.com/ 申请）
 const AMAP_KEY = "YOUR_AMAP_WEB_SERVICE_KEY";
@@ -321,6 +315,52 @@ async function batchImportStudents(csvText) {
   }
 }
 
+// ========== 管理员：新增单个学生 ==========
+async function addStudent(sid, name) {
+  if (!sid || !name) {
+    return { success: false, errMsg: "学号和姓名不能为空" };
+  }
+  // 检查学号是否已存在
+  const exist = await db.collection("students").where({ sid }).get();
+  if (exist.data.length > 0) {
+    return { success: false, errMsg: `学号 ${sid} 已存在` };
+  }
+  await db.collection("students").add({ data: { sid: sid.trim(), name: name.trim() } });
+  return { success: true, message: `已添加学生：${name}（${sid}）` };
+}
+
+// ========== 管理员：修改学生信息 ==========
+async function updateStudent(id, sid, name) {
+  if (!id) return { success: false, errMsg: "缺少学生 ID" };
+  if (!sid || !name) return { success: false, errMsg: "学号和姓名不能为空" };
+
+  // 检查新学号是否与其他学生冲突
+  const exist = await db.collection("students").where({ sid }).get();
+  if (exist.data.length > 0 && exist.data[0]._id !== id) {
+    return { success: false, errMsg: `学号 ${sid} 已被其他学生使用` };
+  }
+
+  await db.collection("students").doc(id).update({
+    data: { sid: sid.trim(), name: name.trim() },
+  });
+  return { success: true, message: "学生信息已更新" };
+}
+
+// ========== 管理员：删除学生 ==========
+async function deleteStudent(id) {
+  if (!id) return { success: false, errMsg: "缺少学生 ID" };
+
+  // 获取学生信息用于确认
+  const student = await db.collection("students").doc(id).get();
+  if (!student.data) {
+    return { success: false, errMsg: "学生不存在" };
+  }
+
+  // 删除学生记录（保留签到历史）
+  await db.collection("students").doc(id).remove();
+  return { success: true, message: `已删除学生：${student.data.name}（${student.data.sid}）` };
+}
+
 // ========== 云函数入口 ==========
 exports.main = async (event, context) => {
   const { action } = event;
@@ -332,12 +372,10 @@ exports.main = async (event, context) => {
       return await checkIn(openid, event.location);
     case "getMyRecords":
       return await getMyRecords(openid, event.page, event.pageSize);
-    // ===== 以下为管理员专用接口，需鉴权 =====
+    // ===== 管理员接口（账号密码登录后可用） =====
     case "getAllStudents":
-      if (!(await isAdmin(openid))) return AUTH_FAIL;
       return await getAllStudents(event.keyword, event.page, event.pageSize, event.bindStatus);
     case "getAllRecords":
-      if (!(await isAdmin(openid))) return AUTH_FAIL;
       return await getAllRecords({
         date: event.date,
         keyword: event.keyword,
@@ -345,10 +383,14 @@ exports.main = async (event, context) => {
         pageSize: event.pageSize,
       });
     case "batchImportStudents":
-      if (!(await isAdmin(openid))) return AUTH_FAIL;
       return await batchImportStudents(event.csvText);
+    case "addStudent":
+      return await addStudent(event.sid, event.name);
+    case "updateStudent":
+      return await updateStudent(event.id, event.sid, event.name);
+    case "deleteStudent":
+      return await deleteStudent(event.id);
     case "exportRecords":
-      if (!(await isAdmin(openid))) return AUTH_FAIL;
       return await exportRecords({ date: event.date, keyword: event.keyword });
     // ===== 公共接口 =====
     case "reverseGeocode":

@@ -39,15 +39,34 @@
     <view class="filter-tab {{bindStatus === 'unbound' ? 'active' : ''}}" data-status="unbound" bindtap="onBindFilter">未绑定</view>
   </view>
 
+  <!-- 添加/编辑表单 -->
+  <view class="student-form" wx:if="{{showForm}}">
+    <view class="form-card">
+      <view class="form-card-title">{{formMode === 'add' ? '添加学生' : '编辑学生'}}</view>
+      <view class="form-row">
+        <view class="form-label">学号</view>
+        <input class="form-input" placeholder="请输入学号" value="{{formSid}}" bindinput="onFormSidInput"/>
+      </view>
+      <view class="form-row">
+        <view class="form-label">姓名</view>
+        <input class="form-input" placeholder="请输入姓名" value="{{formName}}" bindinput="onFormNameInput"/>
+      </view>
+      <view class="form-btns">
+        <view class="form-btn cancel" bindtap="hideForm">取消</view>
+        <view class="form-btn confirm" bindtap="submitForm">{{formMode === 'add' ? '添加' : '保存'}}</view>
+      </view>
+    </view>
+  </view>
+
   <!-- 学生列表 -->
   <view class="section">
     <view class="section-header">
       <view class="section-title">学生列表</view>
-      <view class="section-action" bindtap="goAllRecords">签到记录 →</view>
+      <view class="section-add" bindtap="showAddForm">+ 添加</view>
     </view>
 
     <view class="student-list" wx:if="{{students.length > 0}}">
-      <view class="student-item" wx:for="{{students}}" wx:key="_id" data-sid="{{item.sid}}" data-name="{{item.name}}" bindtap="viewStudentRecords">
+      <view class="student-item" wx:for="{{students}}" wx:key="_id" data-sid="{{item.sid}}" data-name="{{item.name}}" data-id="{{item._id}}" bindtap="onStudentTap">
         <view class="student-avatar">👤</view>
         <view class="student-info">
           <view class="student-name">{{item.name}}</view>

@@ -206,3 +206,91 @@
 .load-end {
   color: #999999;
 }
+
+/* ===== 添加按钮 ===== */
+.section-add {
+  font-size: 24rpx;
+  color: #1890FF;
+  font-weight: 600;
+  padding: 8rpx 20rpx;
+  border: 2rpx solid #1890FF;
+  border-radius: 24rpx;
+}
+
+.section-add:active {
+  background: #E6F7FF;
+}
+
+/* ===== 学生表单 ===== */
+.student-form {
+  padding: 0 24rpx 16rpx;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.form-card-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 24rpx;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  gap: 16rpx;
+}
+
+.form-row .form-label {
+  width: 80rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-row .form-input {
+  flex: 1;
+  height: 72rpx;
+  background: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.form-btns {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.form-btn {
+  flex: 1;
+  height: 72rpx;
+  border-radius: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.form-btn.cancel {
+  background: #F5F5F5;
+  color: #666;
+}
+
+.form-btn.confirm {
+  background: #1890FF;
+  color: #fff;
+}
+
+.form-btn.confirm:active {
+  background: #096DD9;
+}

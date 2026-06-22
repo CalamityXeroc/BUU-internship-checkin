@@ -24,3 +24,4 @@ minitest/
 
 # 申请材料
 *.pdf
+.claude/

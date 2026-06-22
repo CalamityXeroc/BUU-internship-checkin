@@ -67,7 +67,7 @@ async function getStudentInfo() {
 }
 
 // ========== 管理员登录（含暴力破解保护） ==========
-async function adminLogin(openid, account, password) {
+async function adminLogin(account, password) {
   const res = await db.collection("admins").where({ account }).get();
 
   if (res.data.length === 0) {
@@ -76,7 +76,7 @@ async function adminLogin(openid, account, password) {
 
   const admin = res.data[0];
 
-  // H4: 暴力破解保护 — 5 次失败后锁定 15 分钟
+  // 暴力破解保护 — 5 次失败后锁定 15 分钟
   const now = Date.now();
   if (admin.lockUntil && now < admin.lockUntil) {
     const mins = Math.ceil((admin.lockUntil - now) / 60000);
@@ -87,34 +87,33 @@ async function adminLogin(openid, account, password) {
     const failCount = (admin.failCount || 0) + 1;
     const updateData = { failCount };
     if (failCount >= 5) {
-      updateData.lockUntil = now + 15 * 60 * 1000; // 锁定 15 分钟
+      updateData.lockUntil = now + 15 * 60 * 1000;
       updateData.failCount = 0;
     }
     await db.collection("admins").doc(admin._id).update({ data: updateData });
     return { success: false, errMsg: failCount >= 5 ? "密码错误次数过多，账号已锁定 15 分钟" : `密码错误（已错 ${failCount} 次，5 次后锁定）` };
   }
 
-  // 登录成功：清除锁定 + 保存 openid（用于后续管理员身份验证）
+  // 登录成功：清除锁定
   await db.collection("admins").doc(admin._id).update({
-    data: { openid, failCount: 0, lockUntil: null },
+    data: { failCount: 0, lockUntil: null },
   });
 
   return { success: true, admin: { account: admin.account } };
 }
 
-// ========== 修改管理员密码（H2: 服务端校验调用者身份） ==========
-async function changePassword(openid, account, oldPassword, newPassword) {
+// ========== 修改管理员密码 ==========
+async function changePassword(account, oldPassword, newPassword) {
   if (!newPassword || newPassword.length < 4) {
     return { success: false, errMsg: "新密码长度不能少于4位" };
   }
 
-  // 校验调用者是管理员
-  const adminCheck = await db.collection("admins").where({ openid }).get();
-  if (adminCheck.data.length === 0) {
-    return { success: false, errMsg: "无权限：非管理员" };
+  const res = await db.collection("admins").where({ account }).get();
+  if (res.data.length === 0) {
+    return { success: false, errMsg: "账号不存在" };
   }
 
-  const admin = adminCheck.data[0];
+  const admin = res.data[0];
 
   if (admin.password !== oldPassword) {
     return { success: false, errMsg: "原密码错误" };
@@ -139,9 +138,9 @@ exports.main = async (event, context) => {
     case "getStudentInfo":
       return await getStudentInfo();
     case "adminLogin":
-      return await adminLogin(openid, event.account, event.password);
+      return await adminLogin(event.account, event.password);
     case "changePassword":
-      return await changePassword(openid, event.account, event.oldPassword, event.newPassword);
+      return await changePassword(event.account, event.oldPassword, event.newPassword);
     default:
       return { success: false, errMsg: `未知操作: ${action}` };
   }

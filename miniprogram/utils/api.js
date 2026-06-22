@@ -75,6 +75,21 @@ function batchImportStudents(csvText) {
   return callCloud("signService", { action: "batchImportStudents", csvText });
 }
 
+/** 管理员：新增单个学生 */
+function addStudent(sid, name) {
+  return callCloud("signService", { action: "addStudent", sid, name });
+}
+
+/** 管理员：修改学生信息 */
+function updateStudent(id, sid, name) {
+  return callCloud("signService", { action: "updateStudent", id, sid, name });
+}
+
+/** 管理员：删除学生 */
+function deleteStudent(id) {
+  return callCloud("signService", { action: "deleteStudent", id });
+}
+
 /** 逆地理编码：GPS坐标 → 街道地址 */
 function reverseGeocode(lat, lng) {
   return callCloud("signService", { action: "reverseGeocode", lat, lng });
@@ -113,6 +128,9 @@ module.exports = {
   getAllStudents,
   getAllRecords,
   exportRecords,
+  addStudent,
+  updateStudent,
+  deleteStudent,
   reverseGeocode,
   batchImportStudents,
   initDatabase,
