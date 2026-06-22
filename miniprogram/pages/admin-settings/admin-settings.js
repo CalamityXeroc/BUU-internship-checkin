@@ -76,4 +76,12 @@ Page({
   goBack() {
     wx.navigateBack();
   },
+
+  onShareAppMessage() {
+    return { title: "北京联合大学实习签到", path: "/pages/index/index" };
+  },
+
+  onShareTimeline() {
+    return { title: "北京联合大学实习签到 — 每日打卡" };
+  },
 });
