@@ -5,6 +5,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
 const https = require("https");
+const XLSX = require("xlsx");
 
 
 // 高德地图 Web服务 API Key（去 https://console.amap.com/ 申请）
@@ -361,6 +362,98 @@ async function deleteStudent(id) {
   return { success: true, message: `已删除学生：${student.data.name}（${student.data.sid}）` };
 }
 
+// ========== 批量删除学生 ==========
+async function batchDeleteStudents(ids) {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return { success: false, errMsg: "请选择要删除的学生" };
+  }
+
+  let deleted = 0;
+  let msg = "";
+
+  for (const id of ids) {
+    try {
+      const student = await db.collection("students").doc(id).get();
+      if (student.data) {
+        await db.collection("students").doc(id).remove();
+        deleted++;
+      }
+    } catch (e) {
+      msg = e.message || "";
+    }
+  }
+
+  return { success: true, message: `已删除 ${deleted} 名学生` + (msg ? `，最后错误：${msg}` : "") };
+}
+
+// ========== Excel 导入学生 ==========
+async function importExcel(base64Data) {
+  if (!base64Data) {
+    return { success: false, errMsg: "文件为空，请选择有效的 Excel 文件" };
+  }
+
+  try {
+    const buffer = Buffer.from(base64Data, "base64");
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    if (!sheetName) {
+      return { success: false, errMsg: "Excel 文件中没有工作表" };
+    }
+
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    if (!rows || rows.length === 0) {
+      return { success: false, errMsg: "Excel 表格为空，没有数据行" };
+    }
+
+    let imported = 0;
+    let skipped = 0;
+    const errors = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row || row.length < 2) continue;
+
+      const col0 = String(row[0] || "").trim();
+      const col1 = String(row[1] || "").trim();
+
+      // 跳过表头行
+      if (i === 0 && (/姓名|学号|名字|名称|sid/i.test(col0) || /姓名|学号|名字|名称|sid/i.test(col1))) {
+        continue;
+      }
+
+      if (!col0 || !col1) continue;
+
+      let sid, name;
+      if (/^\d{10,}$/.test(col0)) {
+        sid = col0; name = col1;
+      } else if (/^\d{10,}$/.test(col1)) {
+        sid = col1; name = col0;
+      } else {
+        errors.push(`第${i + 1}行无法识别学号列`);
+        continue;
+      }
+
+      const exist = await db.collection("students").where({ sid }).get();
+      if (exist.data.length > 0) { skipped++; continue; }
+
+      await db.collection("students").add({ data: { sid, name } });
+      imported++;
+    }
+
+    return {
+      success: true,
+      imported,
+      skipped,
+      total: imported + skipped,
+      errors: errors.slice(0, 10),
+    };
+  } catch (e) {
+    return { success: false, errMsg: `${e.message || "未知错误"}` };
+  }
+}
+
 // ========== 云函数入口 ==========
 exports.main = async (event, context) => {
   const { action } = event;
@@ -382,12 +475,16 @@ exports.main = async (event, context) => {
         page: event.page,
         pageSize: event.pageSize,
       });
+    case "importExcel":
+      return await importExcel(event.base64Data);
     case "batchImportStudents":
       return await batchImportStudents(event.csvText);
     case "addStudent":
       return await addStudent(event.sid, event.name);
     case "updateStudent":
       return await updateStudent(event.id, event.sid, event.name);
+    case "batchDeleteStudents":
+      return await batchDeleteStudents(event.ids);
     case "deleteStudent":
       return await deleteStudent(event.id);
     case "exportRecords":

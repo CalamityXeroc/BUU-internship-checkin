@@ -37,6 +37,8 @@
     <view class="filter-tab {{bindStatus === '' ? 'active' : ''}}" data-status="" bindtap="onBindFilter">全部</view>
     <view class="filter-tab {{bindStatus === 'bound' ? 'active' : ''}}" data-status="bound" bindtap="onBindFilter">已绑定</view>
     <view class="filter-tab {{bindStatus === 'unbound' ? 'active' : ''}}" data-status="unbound" bindtap="onBindFilter">未绑定</view>
+    <view class="filter-spacer"></view>
+    <view class="filter-action" bindtap="goAllRecords">签到记录 →</view>
   </view>
 
   <!-- 添加/编辑表单 -->
@@ -62,11 +64,18 @@
   <view class="section">
     <view class="section-header">
       <view class="section-title">学生列表</view>
-      <view class="section-add" bindtap="showAddForm">+ 添加</view>
+      <view class="section-actions">
+        <view class="section-delete" bindtap="toggleMultiSelect">{{multiSelect ? '取消' : '批量删除'}}</view>
+        <view class="section-add" bindtap="showAddForm">+ 添加</view>
+        <view class="section-import" bindtap="handleImportExcel">📥 导入</view>
+      </view>
     </view>
 
     <view class="student-list" wx:if="{{students.length > 0}}">
-      <view class="student-item" wx:for="{{students}}" wx:key="_id" data-sid="{{item.sid}}" data-name="{{item.name}}" data-id="{{item._id}}" bindtap="onStudentTap">
+      <view class="student-item" wx:for="{{students}}" wx:key="_id" data-sid="{{item.sid}}" data-name="{{item.name}}" data-id="{{item._id}}" data-index="{{index}}" bindtap="{{multiSelect ? 'onStudentCheck' : 'onStudentTap'}}">
+        <view class="check-box {{item._checked ? 'checked' : ''}}" wx:if="{{multiSelect}}">
+          <view class="check-mark" wx:if="{{item._checked}}">✓</view>
+        </view>
         <view class="student-avatar">👤</view>
         <view class="student-info">
           <view class="student-name">{{item.name}}</view>
@@ -92,5 +101,12 @@
     <view class="load-end" wx:if="{{!hasMore && students.length > 0}}">
       — 已加载全部 {{totalStudents}} 名学生 —
     </view>
+  </view>
+
+  <!-- 批量操作栏 -->
+  <view class="batch-bar" wx:if="{{multiSelect}}">
+    <view class="batch-btn" bindtap="selectAll">{{selectedIds.length === students.length ? '取消全选' : '全选'}}</view>
+    <view class="batch-count">已选 {{selectedIds.length}} 人</view>
+    <view class="batch-btn danger" bindtap="deleteSelected">删除选中</view>
   </view>
 </view>

@@ -18,6 +18,9 @@ Page({
     loading: false,
     headerPaddingTop: 40,
     capsuleHeight: 32,
+    // 多选删除
+    multiSelect: false,
+    selectedIds: [],
     // 表单状态
     showForm: false,
     formMode: "", // 'add' | 'edit'
@@ -172,6 +175,103 @@ Page({
             } else {
               wx.showToast({ title: result.errMsg, icon: "none" });
             }
+          } catch (err) {
+            wx.hideLoading();
+            wx.showToast({ title: "删除失败", icon: "none" });
+          }
+        }
+      },
+    });
+  },
+
+  // ========== Excel 导入 ==========
+  handleImportExcel() {
+    wx.chooseMessageFile({
+      count: 1,
+      type: "file",
+      extension: ["xlsx", "xls"],
+      success: async (res) => {
+        const filePath = res.tempFiles[0].path;
+        wx.showLoading({ title: "导入中..." });
+
+        try {
+          const fs = wx.getFileSystemManager();
+          const base64 = fs.readFileSync(filePath, "base64");
+          const result = await api.importExcel(base64);
+          wx.hideLoading();
+
+          if (result.success) {
+            wx.showModal({
+              title: "导入完成",
+              content: `新增 ${result.imported} 人\n已存在跳过 ${result.skipped} 人`,
+              showCancel: false,
+            });
+            this.loadData();
+          } else {
+            wx.showToast({ title: result.errMsg || "导入失败", icon: "none" });
+          }
+        } catch (err) {
+          wx.hideLoading();
+          wx.showToast({ title: "导入失败", icon: "none" });
+        }
+      },
+    });
+  },
+
+  // ========== 批量删除 ==========
+  toggleMultiSelect() {
+    if (this.data.multiSelect) {
+      this.setData({ multiSelect: false, selectedIds: [] });
+    } else {
+      // 进入多选模式，给每个学生加 _checked 标记
+      const students = this.data.students.map(s => {
+        s._checked = false;
+        return s;
+      });
+      this.setData({ multiSelect: true, students, selectedIds: [] });
+    }
+  },
+
+  onStudentCheck(e) {
+    const idx = e.currentTarget.dataset.index;
+    const checked = !this.data.students[idx]._checked;
+    this.setData({
+      [`students[${idx}]._checked`]: checked,
+      selectedIds: checked
+        ? [...this.data.selectedIds, this.data.students[idx]._id]
+        : this.data.selectedIds.filter(id => id !== this.data.students[idx]._id),
+    });
+  },
+
+  selectAll() {
+    if (this.data.selectedIds.length === this.data.students.length) {
+      const students = this.data.students.map(s => { s._checked = false; return s; });
+      this.setData({ students, selectedIds: [] });
+    } else {
+      const students = this.data.students.map(s => { s._checked = true; return s; });
+      this.setData({ students, selectedIds: students.map(s => s._id) });
+    }
+  },
+
+  async deleteSelected() {
+    if (this.data.selectedIds.length === 0) {
+      wx.showToast({ title: "请先选择学生", icon: "none" });
+      return;
+    }
+
+    wx.showModal({
+      title: "批量删除",
+      content: `确定删除选中的 ${this.data.selectedIds.length} 名学生吗？`,
+      confirmColor: "#FF4D4F",
+      success: async (res) => {
+        if (res.confirm) {
+          wx.showLoading({ title: "删除中..." });
+          try {
+            const result = await api.batchDeleteStudents(this.data.selectedIds);
+            wx.hideLoading();
+            wx.showToast({ title: result.message, icon: "success" });
+            this.setData({ multiSelect: false, selectedIds: [] });
+            this.loadData();
           } catch (err) {
             wx.hideLoading();
             wx.showToast({ title: "删除失败", icon: "none" });

@@ -4,6 +4,7 @@
   "description": "签到服务：签到打卡、记录查询、数据导出",
   "main": "index.js",
   "dependencies": {
-    "wx-server-sdk": "~2.6.3"
+    "wx-server-sdk": "~2.6.3",
+    "xlsx": "^0.18.5"
   }
 }

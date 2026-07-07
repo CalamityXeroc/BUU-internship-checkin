@@ -70,6 +70,11 @@ function exportRecords({ date, keyword } = {}) {
   return callCloud("signService", { action: "exportRecords", date, keyword });
 }
 
+/** 批量导入学生（Excel 文件，通过云存储） */
+function importExcel(base64Data) {
+  return callCloud("signService", { action: "importExcel", base64Data });
+}
+
 /** 批量导入学生（CSV 文本） */
 function batchImportStudents(csvText) {
   return callCloud("signService", { action: "batchImportStudents", csvText });
@@ -88,6 +93,11 @@ function updateStudent(id, sid, name) {
 /** 管理员：删除学生 */
 function deleteStudent(id) {
   return callCloud("signService", { action: "deleteStudent", id });
+}
+
+/** 管理员：批量删除学生 */
+function batchDeleteStudents(ids) {
+  return callCloud("signService", { action: "batchDeleteStudents", ids });
 }
 
 /** 逆地理编码：GPS坐标 → 街道地址 */
@@ -131,7 +141,9 @@ module.exports = {
   addStudent,
   updateStudent,
   deleteStudent,
+  batchDeleteStudents,
   reverseGeocode,
+  importExcel,
   batchImportStudents,
   initDatabase,
   importStudents,

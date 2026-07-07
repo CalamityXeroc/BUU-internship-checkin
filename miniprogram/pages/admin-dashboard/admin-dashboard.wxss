@@ -192,6 +192,16 @@
   color: #fff;
 }
 
+.filter-spacer {
+  flex: 1;
+}
+
+.filter-action {
+  font-size: 24rpx;
+  color: #1890FF;
+  font-weight: 500;
+}
+
 /* ===== 加载更多 ===== */
 .load-more, .load-end {
   text-align: center;
@@ -208,17 +218,103 @@
 }
 
 /* ===== 添加按钮 ===== */
-.section-add {
+.section-actions {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.section-action {
   font-size: 24rpx;
   color: #1890FF;
+  font-weight: 500;
+}
+
+.section-add,
+.section-import {
+  font-size: 24rpx;
   font-weight: 600;
   padding: 8rpx 20rpx;
   border: 2rpx solid #1890FF;
   border-radius: 24rpx;
+  color: #1890FF;
+  margin-left: 12rpx;
 }
 
-.section-add:active {
+.section-add:active,
+.section-import:active {
   background: #E6F7FF;
+}
+
+/* ===== 复选框 ===== */
+.check-box {
+  width: 48rpx;
+  height: 48rpx;
+  border: 3rpx solid #D9D9D9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.check-box.checked {
+  background: #1890FF;
+  border-color: #1890FF;
+}
+
+.check-mark {
+  font-size: 26rpx;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ===== 批量操作栏 ===== */
+.batch-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1rpx solid #E8E8E8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
+
+.batch-btn {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #1890FF;
+  padding: 12rpx 24rpx;
+}
+
+.batch-btn.danger {
+  color: #FF4D4F;
+}
+
+.batch-count {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.section-delete {
+  font-size: 24rpx;
+  color: #FF4D4F;
+  font-weight: 500;
+  padding: 8rpx 20rpx;
+  border: 2rpx solid #FF4D4F;
+  border-radius: 24rpx;
+}
+
+.section-add,
+.section-import,
+.section-delete {
+  margin-left: 0;
 }
 
 /* ===== 学生表单 ===== */
